@@ -1,7 +1,6 @@
-/* eslint-disable linebreak-style */
 // Timestamp exericise for freecodecamp
 
-// Depedencies
+// Dependencies
 var express = require("express");
 var bodyParser = require("body-parser");
 var cors = require("cors");
@@ -14,40 +13,36 @@ app.use(cors());
 app.get("/api/timestamp/:date_string", (req, res, next) => {
 	let dateString = req.params.date_string;
 	let normalDate = Date.parse(req.params.date_string);
+	let unixDate = new Date(dateString).getTime() / 1000;
 	let dateFormat = {weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"};
-	var utcDate;
-	var unixDate;
-
-	// Valid UTC date
+	let utcDate = new Date(dateString).toLocaleTimeString("en-us", dateFormat);
+	let dateObj = {};
+	
+	// Valid normal date
 	if (isNaN(normalDate) === false) {
-		utcDate = new Date(dateString).toLocaleTimeString("en-us", dateFormat);
-		unixDate = new Date(dateString).getTime() / 1000;
+		dateObj = {unix: unixDate, utc: utcDate};
 	}
-    
 	// Valid unix date
 	else if (Number.isInteger(Number(dateString)) === true) {
-		utcDate = new Date(dateString * 1000).toLocaleTimeString("en-us", dateFormat);
-		unixDate = dateString;
+		dateObj = {unix: dateString, utc: new Date(dateString * 1000).toLocaleTimeString("en-us", dateFormat)};
 	}
-
 	// Empty string
-	else if (dateString == "") {
-		utcDate = new Date().toLocaleTimeString("en-us", dateFormat);
-		unixDate =  new Date(utcDate).getTime() / 1000;
+	else if (normalDate == null) {
+		normalDate = new Date();
+		dateObj = {unix: normalDate.getTime() / 1000, utc: utcDate};
 	}
-     
 	// Invalid string
 	else {
-		utcDate = new Date(dateString).toLocaleTimeString("en-us", dateFormat);
-		unixDate =  normalDate;
+		dateObj = {unix: normalDate, utc: "Invalid Date"};
 	}
 
 	// Send date back
 	next();
-	res.json({unix: unixDate, utc: utcDate});
+	res.json(dateObj);
 });
 
 // Server listens port 3000
 app.listen(3000, () => {
+	// eslint-disable-next-line no-console
 	console.log("Ready");
 });
