@@ -41,8 +41,7 @@ app.get("/api/timestamp/:date_string", (req, res, next) => {
 	res.json(dateObj);
 });
 
-// Server listens port 3000
-app.listen(3000, () => {
-	// eslint-disable-next-line no-console
+// Server listens port *
+app.listen(() => {
 	console.log("Ready");
 });
